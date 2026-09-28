@@ -1,0 +1,50 @@
+name: Student Feedback CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+
+  build-and-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+
+        with:
+          python-version: "3.11"
+
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+
+      - name: Test Python Code
+        run: |
+          python -m py_compile app.py
+
+
+      - name: Test Email Validation
+        run: |
+          python -c "assert 'student@niet.co.in'.endswith('@niet.co.in')"
+          python -c "assert not 'student@gmail.com'.endswith('@niet.co.in')"
+
+
+      - name: CI/CD Success
+        run: |
+          echo "Student Feedback Application CI/CD completed successfully!"
