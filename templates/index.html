@@ -1,33 +1,308 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Student Feedback</title>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Feedback System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background-color: #f1f3f6;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .box {
+            background-color: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.10);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 17px;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 7px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: #087ff5;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0568cc;
+        }
+
+        /* Error message */
+        .error {
+            background-color: #ffe6e6;
+            color: #d00000;
+            border: 1px solid #ff9999;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        /* Submitted feedback */
+        .feedback-item {
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 18px;
+            margin-bottom: 15px;
+            background-color: #fafafa;
+        }
+
+        .feedback-item p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .no-feedback {
+            color: #666;
+        }
+
+    </style>
+
 </head>
+
+
 <body>
-    <h1>Student Feedback Form</h1>
 
-    <form method="POST">
-        <label>Name:</label>
-        <input type="text" name="name" required><br><br>
+<div class="container">
 
-        <label>Course:</label>
-        <input type="text" name="course" required><br><br>
+    <!-- Feedback Form -->
 
-        <label>Feedback:</label><br>
-        <textarea name="feedback" required></textarea><br><br>
+    <div class="box">
 
-        <button type="submit">Submit Feedback</button>
-    </form>
+        <h1>Student Feedback Form</h1>
 
-    <h2>Submitted Feedback</h2>
+        <form method="POST" onsubmit="return validateEmail()">
 
-    {% for item in feedbacks %}
-        <p>
-            <b>Name:</b> {{ item.name }}<br>
-            <b>Course:</b> {{ item.course }}<br>
-            <b>Feedback:</b> {{ item.feedback }}
-        </p>
-        <hr>
-    {% endfor %}
+            <!-- Name -->
+
+            <label for="name">Name:</label>
+
+            <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter your name"
+                value="{{ form_data.name if form_data else '' }}"
+                required
+            >
+
+
+            <!-- Email -->
+
+            <label for="email">Email:</label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="yourname@niet.co.in"
+                value="{{ form_data.email if form_data else '' }}"
+                required
+            >
+
+            <!-- JavaScript Error -->
+
+            <div id="emailError" class="error" style="display: none;">
+                Please use a valid NIET email ending with @niet.co.in
+            </div>
+
+
+            <!-- Flask Backend Error -->
+
+            {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+
+            <!-- Course -->
+
+            <label for="course">Course:</label>
+
+            <input
+                type="text"
+                id="course"
+                name="course"
+                placeholder="Enter your course"
+                value="{{ form_data.course if form_data else '' }}"
+                required
+            >
+
+
+            <!-- Feedback -->
+
+            <label for="feedback">Feedback:</label>
+
+            <textarea
+                id="feedback"
+                name="feedback"
+                placeholder="Enter your feedback"
+                required
+            >{{ form_data.feedback if form_data else '' }}</textarea>
+
+
+            <!-- Submit -->
+
+            <button type="submit">
+                Submit Feedback
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- Submitted Feedback -->
+
+    <div class="box">
+
+        <h2>Submitted Feedback</h2>
+
+        {% if feedbacks %}
+
+            {% for item in feedbacks %}
+
+                <div class="feedback-item">
+
+                    <p>
+                        <strong>Name:</strong>
+                        {{ item.name }}
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        {{ item.email }}
+                    </p>
+
+                    <p>
+                        <strong>Course:</strong>
+                        {{ item.course }}
+                    </p>
+
+                    <p>
+                        <strong>Feedback:</strong>
+                        {{ item.feedback }}
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p class="no-feedback">
+                No feedback submitted yet.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- Email Validation -->
+
+<script>
+
+function validateEmail() {
+
+    const email = document.getElementById("email").value.trim();
+
+    const error = document.getElementById("emailError");
+
+    /*
+        Only emails ending with @niet.co.in are allowed.
+
+        Examples:
+        harsh@niet.co.in       -> VALID
+        student123@niet.co.in -> VALID
+        harsh@gmail.com        -> INVALID
+        harsh@yahoo.com        -> INVALID
+        harsh@niet.com         -> INVALID
+    */
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@niet\.co\.in$/;
+
+    if (!emailPattern.test(email)) {
+
+        error.style.display = "block";
+
+        return false;
+    }
+
+    error.style.display = "none";
+
+    return true;
+}
+
+</script>
+
+
 </body>
+
 </html>
